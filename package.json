@@ -1,12 +1,1 @@
-{
-  "name": "testapp",
-  "version": "1.0.0",
-  "description": "Simple web app with login and hour endpoints",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
-}
+{"name":"testapp","version":"1.0.0","type":"module","dependencies":{"express":"^4.18.2","body-parser":"^1.20.2"}}
