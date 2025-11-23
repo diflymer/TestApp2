@@ -1,3 +1,5 @@
+import { createCanvas } from 'canvas';
+
 export default (express, bodyParser, createReadStream, crypto, http) => {
   const app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -8,28 +10,26 @@ export default (express, bodyParser, createReadStream, crypto, http) => {
     next();
   });
   app.get('/login/', (req, res) => {
-    res.send('72457f98-f632-4204-8a92-eabc6e8b43a5');
+    res.send('diflymer');
   });
-  app.get('/code/', (req, res) => {
-    const filePath = import.meta.url.replace(/^file:\/\/\//, '');
-    const stream = createReadStream(filePath);
-    stream.pipe(res);
-  });
-  app.get('/sha1/:input/', (req, res) => {
-    const hash = crypto.createHash('sha1').update(req.params.input).digest('hex');
-    res.send(hash);
-  });
-  app.all('/req/', (req, res) => {
-    const addr = req.method === 'GET' ? req.query.addr : req.body.addr;
-    if (!addr) return res.status(400).send('Missing addr parameter');
-    http.get(addr, (response) => {
-      let data = '';
-      response.on('data', chunk => data += chunk);
-      response.on('end', () => res.send(data));
-    }).on('error', () => res.status(500).send('Error fetching resource'));
-  });
-  app.all('*', (req, res) => {
-    res.send('72457f98-f632-4204-8a92-eabc6e8b43a5');
+
+  app.get('/makeimage/', (req, res) => {
+    const width = parseInt(req.query.width);
+    const height = parseInt(req.query.height);
+
+    if (!width || !height || width <= 0 || height <= 0 || width > 10000 || height > 10000) {
+      return res.status(400).send('Invalid width or height parameters');
+    }
+
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+
+    // Fill with white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+
+    res.setHeader('Content-Type', 'image/png');
+    canvas.pngStream().pipe(res);
   });
   return app;
 };
